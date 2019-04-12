@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
 
 import eaglet.individualCreator.EagletIndividualCreator;
@@ -170,7 +171,7 @@ public class MLCAlgorithm extends SGE {
 	boolean weightVotesByFrequency;
 
 	/**
-	 * Alpha value to multiply by distance to the ensemble in member selection
+	 * beta value to multiply by distance to the ensemble in member selection
 	 */
 	double betaMemberSelection;
 
@@ -257,10 +258,66 @@ public class MLCAlgorithm extends SGE {
 		return this.tableFitness.size();
 	}
 	
+	/**
+	 * Configure some default aspects and parameters of EME to make the configuration easier
+	 * 
+	 * @param configuration Configuration
+	 */
+	private void configureEagletDefaults(Configuration configuration) {
+		//Species
+		configuration.setProperty("species[@type]", "net.sf.jclec.binarray.BinArrayIndividualSpecies");
+		configuration.setProperty("species[@genotype-length]", "1");
+		
+		//Variable
+		configuration.addProperty("variable", "false");
+		
+		//Validation set (only if not provided)
+		if(! configuration.containsKey("validation-set")) {
+			configuration.addProperty("validation-set", "false");
+		}
+		
+		//Evaluator (only if not provided)
+		if(! configuration.containsKey("evaluator[@type]")) {
+			configuration.addProperty("evaluator[@type]", "eaglet.algorithm.MLCEvaluator");
+		}
+		
+		//Provider (only if not provided)
+		if(! configuration.containsKey("provider[@type]")) {
+			configuration.addProperty("provider[@type]", "eaglet.individualCreator.FrequencyBasedIndividualCreator");
+		}
+		
+		//Randgen type (only if not provided)
+		if(! configuration.containsKey("rand-gen-factory[@type]")) {
+			configuration.addProperty("rand-gen-factory[@type]", "net.sf.jclec.util.random.RanecuFactory");
+		}
+		
+		//Parents-selector (only if not provided)
+		if(! configuration.containsKey("parents-selector[@type]")) {
+			configuration.addProperty("parents-selector[@type]", "net.sf.jclec.selector.TournamentSelector");
+		}
+		if(! configuration.containsKey("parents-selector.tournament-size")) {
+			configuration.addProperty("parents-selector.tournament-size", "2");
+		}
+		
+		//Listener type (only if not provided)
+		if(! configuration.containsKey("listener[@type]")) {
+			configuration.addProperty("listener[@type]", "eaglet.algorithm.MLCListener");
+		}
+		
+		//Other parameters
+		if(! configuration.containsKey("predictThreshold")) {
+			configuration.addProperty("predictThreshold", "false");
+		}
+		if(! configuration.containsKey("weightVotesByFrequency")) {
+			configuration.addProperty("weightVotesByFrequency", "false");
+		}
+	}
+	
 	
 	@Override
 	public void configure(Configuration configuration)
 	{
+		configureEagletDefaults(configuration);
 		super.configure(configuration);
 		
 		try {
@@ -285,6 +342,8 @@ public class MLCAlgorithm extends SGE {
 			 *  - Generate trainDataset with bagging and validation set with outOfBag instances?
 			 */			
 			//Use or not a validation set to evaluate individuals
+			useValidationSet = configuration.getBoolean("validation-set");
+			
 			useValidationSet = configuration.getBoolean("validation-set");
 			if(useValidationSet)
 			{
@@ -322,17 +381,17 @@ public class MLCAlgorithm extends SGE {
 			//Get number of labels
 			numberLabels = datasetTrain.getNumLabels();
 			
-			numClassifiers = configuration.getInt("max-number-classifiers");
+			numClassifiers = configuration.getInt("number-classifiers");
 			predictThreshold = configuration.getBoolean("predictThreshold");
 			if(!predictThreshold){
 				predictionThreshold = configuration.getDouble("prediction-threshold");
 			}
 			variable = configuration.getBoolean("variable");
-			maxNumLabelsClassifier = configuration.getInt("max-number-labels-classifier");
+			maxNumLabelsClassifier = configuration.getInt("number-labels-classifier");
 			
 			weightVotesByFrequency = configuration.getBoolean("weightVotesByFrequency");
 			
-			betaMemberSelection = configuration.getDouble("alpha-member-selection");
+			betaMemberSelection = configuration.getDouble("beta-member-selection");
 					 
 			// Set provider settings
 			((EagletIndividualCreator) provider).setMaxNumLabelsClassifier(maxNumLabelsClassifier);
@@ -589,7 +648,7 @@ public class MLCAlgorithm extends SGE {
 	}
 	
 	
-	private List<IIndividual> selectEnsembleMembers(List<IIndividual> individuals, int n, int [] expectedVotes, double alpha){
+	private List<IIndividual> selectEnsembleMembers(List<IIndividual> individuals, int n, int [] expectedVotes, double beta){
 		//Copy of the expectedVotes array
 		int [] expectedVotesCopy = new int[numberLabels];
 		System.arraycopy(expectedVotes, 0, expectedVotesCopy, 0, numberLabels);
@@ -597,7 +656,7 @@ public class MLCAlgorithm extends SGE {
 		//Weights for each label
 		double [] weights = weightsPerLabel.clone();
 		
-//		double alpha = 0.5;
+//		double beta = 0.5;
 		byte [][] EnsembleMatrix = new byte[n][numberLabels];
 		
 		List<IIndividual> members = new ArrayList<IIndividual>();
@@ -625,7 +684,7 @@ public class MLCAlgorithm extends SGE {
 			
 			//Update fitness for all individuals
 			for(int i=0; i<indsCopy.size(); i++){
-				updatedFitnesses[i] = alpha * distanceToEnsemble(((BinArrayIndividual)indsCopy.get(i)).getGenotype(), EnsembleMatrix, currentEnsembleSize, weights) + (1-alpha)*((SimpleValueFitness)indsCopy.get(i).getFitness()).getValue();
+				updatedFitnesses[i] = beta * distanceToEnsemble(((BinArrayIndividual)indsCopy.get(i)).getGenotype(), EnsembleMatrix, currentEnsembleSize, weights) + (1-beta)*((SimpleValueFitness)indsCopy.get(i).getFitness()).getValue();
 			}
 			
 			//Get best individual with updated fitness
@@ -678,7 +737,7 @@ public class MLCAlgorithm extends SGE {
 				double [] candidatesFitness = new double[candidates.size()];
 				
 				for(int i=0; i<candidates.size(); i++){
-					candidatesFitness[i] = alpha * distanceToEnsemble(((BinArrayIndividual)candidates.get(i)).getGenotype(), individualsToEnsembleMatrix(members), members.size(), weights) + (1-alpha)*((SimpleValueFitness)candidates.get(i).getFitness()).getValue();
+					candidatesFitness[i] = beta * distanceToEnsemble(((BinArrayIndividual)candidates.get(i)).getGenotype(), individualsToEnsembleMatrix(members), members.size(), weights) + (1-beta)*((SimpleValueFitness)candidates.get(i).getFitness()).getValue();
 				}
 				
 				double maxFitness = candidatesFitness[0];
