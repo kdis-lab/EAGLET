@@ -25,13 +25,13 @@ The configuration file is a xml file including the parameters of the evolutionar
       <tournament-size>2</tournament-size>
     </parents-selector>
      
-    <population-size>50</population-size>
-    <max-of-generations>25</max-of-generations>    
+    <population-size>94</population-size>
+    <max-of-generations>50</max-of-generations>    
      
     <recombinator type="eaglet.recombinator.RandomCrossover" rec-prob="0.7" />
     <mutator type="eaglet.mutator.RandomMutator" mut-prob="0.2" />
      
-    <number-classifiers>12</number-classifiers>
+    <number-classifiers>47</number-classifiers>
     <number-labels-classifier>3</number-labels-classifier>
     <prediction-threshold>0.5</prediction-threshold>
     <beta-member-selection>0.75</beta-member-selection>
@@ -66,12 +66,12 @@ The configuration file is a xml file including the parameters of the evolutionar
 * The size of the population is determined with the ```<population-size>``` tag.
 * The number of generations of the evolutionary algorithm is determined with the ```<max-of-generations>``` tag.
 * The ```<recombinator>``` tag determines the type of recombinator or crossover operator. In EAGLET, ```RandomCrossover``` operator is implemented. Further, the probability to apply this operator to each individual is determined with the ```rec-prob``` attribute.
-* The ```<mutator>``` tag determines the type of mutation operator. In EAGLET, the basic ```RandomMutator``` is implemented. Further, the probability to apply this operator to each individual is determined with the ```mut-prob``` attribute.
+* The ```<mutator>``` tag determines the type of mutation operator. In EAGLET, the ```RandomMutator``` is implemented. Further, the probability to apply this operator to each individual is determined with the ```mut-prob``` attribute.
 * The number of classifiers in each ensemble is determined by the ```<number-classifiers>``` tag.
 * The number of labels of each classifier, or size of the *k*-labelset, is determined by the ```<number-labels-classifier>``` tag.
 * The threshold used for the final prediction of the ensemble is determined with the ```<prediction-threshold>``` tag.
 * The ```<beta-member-selection>``` tag determines the value of beta (between 0 and 1) for the selection of members in the ensemble; the greater the beta value, the more diverse individuals are selected.
-* With the ```<dataset>``` tag, the datasets used for training (for the evolutionary algorithm) and testing (for testing the final ensemble obtained by EAGLET) are determined with the tags ```<train-dataset>``` and ```<test-dataset>``` respectively. The ```<xml>``` tag indicates the xml file of the dataset (Mulan format, [see more](http://www.uco.es/kdis/mllresources/)).  Several datasets, or several partitions of the same dataset may be used, including the tag ```<dataset multi="true">```, and the different datasets inside, as follows:
+* With the ```<dataset>``` tag, the datasets used for training (for the evolutionary algorithm) and testing (for testing the final ensemble obtained by EAGLET) are determined with the tags ```<train-dataset>``` and ```<test-dataset>``` respectively. The ```<xml>``` tag indicates the xml file of the dataset (Mulan format, [see more](http://www.uco.es/kdis/mllresources/#MulanFormat)).  Several datasets, or several partitions of the same dataset may be used, including the tag ```<dataset multi="true">```, and the different datasets inside, as follows:
   ```xml
     <dataset multi="true">
       <dataset>
@@ -99,9 +99,10 @@ Then, several more characteristics of the evolutionary algorithm could be modifi
 * The ```<evaluator>``` tag determines the class of the evaluator used for evaluating the individuals. Since only one evaluator has been implemented in EAGLET, its default value is ```eaglet.algorithm.MLCEvaluator```.
 * The ```<provider>``` tag determines the class that generates the initial population of individuals. By default, the ```eaglet.individualCreator.FrequencyBasedIndividualCreator``` class is used.
 
-*Yeast* multi-label dataset has been included in the repository as example; however, a wide variety of dataset are available at the [KDIS Research Group Repository](http://www.uco.es/kdis/mllresources/). Further, the example configuration file (*Experiment_yeast.cfg*) is also provided.
+*Yeast* [[Eli01]](#Eli01) multi-label dataset has been included in the repository as example; however, a wide variety of dataset are available at the [KDIS Research Group Repository](http://www.uco.es/kdis/mllresources/). Further, the example configuration file (*Experiment_yeast.cfg*) is also provided.
 
 ### References
+<a name="Eli01"></a>**[Eli01]** A. Elisseeff and J. Weston. (2001). A kernel method for multi-labelled classification. In Advances in Neural Information Processing Systems, 14, 681–687.
 
 <a name="Hal09"></a>**[Hal09]** M. Hall, E. Frank, G. Holmes, B. Pfahringer, P. Reutemann, and I. H. Witten. (2009). The WEKA data mining software: an update. ACM SIGKDD explorations newsletter, 11(1), 10-18.
 
