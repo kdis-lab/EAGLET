@@ -25,6 +25,8 @@ import mulan.classifier.transformation.LabelPowerset;
 import net.sf.jclec.selector.BettersSelector;
 import net.sf.jclec.util.random.IRandGen;
 import weka.classifiers.trees.J48;
+import weka.classifiers.trees.RandomForest;
+import weka.classifiers.trees.RandomTree;
 import weka.core.Instances;
 
 /**
@@ -184,8 +186,9 @@ public class MLCAlgorithm extends SGE {
 		tableFitness = new Hashtable<String, Double>();
 		tableClassifiers = new Hashtable<String, MultiLabelLearner>();
 		bestFitness = Double.MIN_VALUE;
-		
-		learner = new LabelPowerset(new J48());
+
+		//learner = new LabelPowerset(new J48());
+		learner = null;
 	}
 	
 	
@@ -331,9 +334,7 @@ public class MLCAlgorithm extends SGE {
 			
 			MultiLabelInstances fullDatasetTrain = new MultiLabelInstances(datasetTrainFileName, datasetXMLFileName);
 			datasetTest = new MultiLabelInstances(datasetTestFileName, datasetXMLFileName);
-			
-			fullDatasetTrain = new MultiLabelInstances(datasetTrainFileName, datasetXMLFileName);
-			datasetTest = new MultiLabelInstances(datasetTestFileName, datasetXMLFileName);			
+	
 			
 			/**
 			 * VALIDATION SET NOTES
@@ -377,6 +378,10 @@ public class MLCAlgorithm extends SGE {
 				datasetTrain = fullDatasetTrain;
 				datasetValidation = datasetTrain;
 			}
+			
+			RandomTree rt = new RandomTree();
+			rt.setKValue((int)Math.round(fullDatasetTrain.getDataSet().numAttributes() * .75));
+			learner = new LabelPowerset(rt);
 			
 			//Get number of labels
 			numberLabels = datasetTrain.getNumLabels();
