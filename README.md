@@ -2,10 +2,13 @@
 
 EAGLET is an algorithm for the selection of simple, accurate and diverse multi-label classifiers to build an ensemble. This method implicitly considers characteristics of the data, such as the relationship among labels and the imbalance degree of the labels when building the ensemble. In order to model the relationships among labels, each classifier of the ensemble is focused on a small subset of the label space, resulting in models with a relative low computational complexity and lower imbalance in the output space. The resulting ensemble is generated incrementally given the population of multi-label classifiers, so the member that best fits to the ensemble generated so far, considering both predictive performance and diversity, is selected.
 
-More information about this algorithm can be find in the following article:
+More information about this algorithm will be available soon.
+<!--
 > Jose M. Moyano, Eva L. Gibaja, Krzysztof J. Cios, Sebastián Ventura. "Combining Accurate and Diverse Multi-Label Classifiers Based on Projections of the Output Space Using Evolutionary Algorithms". Submitted to ---. (2019).
-
+-->
+<!--
 If you use EAGLET, please cite the paper. Further, a [bibtex citation file](https://github.com/i02momuj/EAGLET/blob/master/citation.bib) is also provided.
+-->
 
 In this repository we provide the code of EAGLET, distributed under the GPLv3 License. EAGLET has been implemented using JCLEC [[Ven08]](#Ven08), Mulan [[Tso11]](#Tso11), and Weka [[Hal09]](#Hal09)  libraries. Besides, the latest release [(v 1.1)](https://github.com/i02momuj/EAGLET/releases/tag/v1.1) provides the executable jar to execute EAGLET.
 
