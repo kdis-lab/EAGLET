@@ -381,7 +381,9 @@ public class MLCAlgorithm extends SGE {
 			
 			RandomTree rt = new RandomTree();
 			rt.setKValue((int)Math.round(fullDatasetTrain.getDataSet().numAttributes() * .75));
-			learner = new LabelPowerset(rt);
+			J48 j48 = new J48();
+//			j48.setConfidenceFactor((float) 0.05);
+			learner = new LabelPowerset(j48);
 			
 			//Get number of labels
 			numberLabels = datasetTrain.getNumLabels();

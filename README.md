@@ -3,7 +3,11 @@
 EAGLET is an algorithm for the selection of simple, accurate and diverse multi-label classifiers to build an ensemble. This method implicitly considers characteristics of the data, such as the relationship among labels and the imbalance degree of the labels when building the ensemble. In order to model the relationships among labels, each classifier of the ensemble is focused on a small subset of the label space, resulting in models with a relative low computational complexity and lower imbalance in the output space. The resulting ensemble is generated incrementally given the population of multi-label classifiers, so the member that best fits to the ensemble generated so far, considering both predictive performance and diversity, is selected.
 
 More information about this algorithm will be available soon.
+<<<<<<< Updated upstream
 <!--
+=======
+<!---
+>>>>>>> Stashed changes
 > Jose M. Moyano, Eva L. Gibaja, Krzysztof J. Cios, Sebastián Ventura. "Combining Accurate and Diverse Multi-Label Classifiers Based on Projections of the Output Space Using Evolutionary Algorithms". Submitted to ---. (2019).
 -->
 <!--
